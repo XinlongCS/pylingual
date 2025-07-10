@@ -76,6 +76,11 @@ def run(file: Path, out_dir: Path, version: PythonVersion, print=False):
         cfts = {bc.codeobj: bc_to_cft(bc) for bc in pyc.iter_bytecodes()}
         out_src = str(SourceContext(pyc, src_lines, cfts))
 
+        try:
+            out_src = normalize_source(out_src)
+        except:
+            pass
+
         out_path = out_dir / "b.py"
         out_path.write_text(out_src, encoding="utf-8")
         out_pyc = out_dir / "b.pyc"
@@ -189,6 +194,9 @@ def main(input: Path, output: str, version: PythonVersion, graph: str | None, pr
                     results[result].append(input)
                     processed += 1
                     dir_map[str(input)] = str(od)
+                    if processed % 10 == 0: # Save every 10 files
+                        res = json.dumps({k.value: list(map(str, v)) for k, v in results.items()} | {"map": dir_map})
+                        (out_dir / "results.json").write_text(res)
                     if result == Result.Success:
                         succs += 1
                     progress_bar.update(task_id, advance=1, success=succs, processed=processed, srate=(succs / processed * 100))
