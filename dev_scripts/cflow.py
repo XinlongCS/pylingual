@@ -52,8 +52,12 @@ def edit_pyc_lines(pyc: PYCFile, src_lines: list[str]):
             line_insts[0].starts_line = lno
             for inst in line_insts[1:]:
                 inst.starts_line = None
-            if lno is not None and lno + 1 not in lno_bytecodes and pyc.version <= (3, 7) and src_lines[lno - 1].strip().startswith('@'):
-                bc.instructions[line_insts[0].offset // 2 + 1].starts_line = lno + 1
+            if lno is not None and pyc.version <= (3, 7) and src_lines[lno - 1].strip().startswith('@'):
+                next_inst = bc.instructions[line_insts[0].offset // 2 + 1]
+                if lno + 1 not in lno_bytecodes:
+                    next_inst.starts_line = lno + 1
+                elif src_lines[lno].strip().startswith('class'):
+                    lno_bytecodes[lno + 1].insert(0, next_inst)
 
 
 def run(file: Path, out_dir: Path, version: PythonVersion, print=False):
@@ -75,11 +79,6 @@ def run(file: Path, out_dir: Path, version: PythonVersion, print=False):
 
         cfts = {bc.codeobj: bc_to_cft(bc) for bc in pyc.iter_bytecodes()}
         out_src = str(SourceContext(pyc, src_lines, cfts))
-
-        try:
-            out_src = normalize_source(out_src)
-        except:
-            pass
 
         out_path = out_dir / "b.py"
         out_path.write_text(out_src, encoding="utf-8")
@@ -155,7 +154,6 @@ def main(input: Path, output: str, version: PythonVersion, graph: str | None, pr
         TextColumn("• [green]Success Rate:{task.fields[srate]:>3.2f}%"),  # success rate
     ]
     if graph:
-        shutil.rmtree(prefix / graph, ignore_errors=True)
         CFG.enable_graphing(prefix / graph, graph_format)
     if input.is_file() and input.suffix == ".py":
         if output:
