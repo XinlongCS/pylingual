@@ -255,3 +255,107 @@ def t1_while_with_empty_body_ellipsis_nofallthru():
     while True:
         ...
     print("end")
+
+def u_break_in_nested_for():
+    for i in range(3):
+        for j in range(3):
+            if i == 1 and j == 1:
+                print("Breaking inner loop")
+                break
+            print(f"i={i}, j={j}")
+
+def u1_break_in_nested_for_nofallthru():
+    for i in range(3):
+        for j in range(3):
+            if i == 1 and j == 1:
+                print("Breaking inner loop")
+                break
+            print(f"i={i}, j={j}")
+    print("end")
+
+def v_continue_in_nested_for():
+    for i in range(3):
+        for j in range(3):
+            if j == 1:
+                continue
+            print(f"Processing i={i}, j={j}")
+
+def v1_continue_in_nested_for_nofallthru():
+    for i in range(3):
+        for j in range(3):
+            if j == 1:
+                continue
+            print(f"Processing i={i}, j={j}")
+    print("end")
+
+def w_break_with_else():
+    for i in range(5):
+        if i == 3:
+            print("Breaking before else")
+            break
+    else:
+        print("This won't execute due to break")
+
+def w1_break_with_else_nofallthru():
+    for i in range(5):
+        if i == 3:
+            print("Breaking before else")
+            break
+    else:
+        print("This won't execute due to break")
+    print("end")
+
+def x_continue_with_else():
+    for i in range(3):
+        if i == 1:
+            continue
+        print(f"Processing {i}")
+    else:
+        print("Else clause still executes after continue")
+
+def x1_continue_with_else_nofallthru():
+    for i in range(3):
+        if i == 1:
+            continue
+        print(f"Processing {i}")
+    else:
+        print("Else clause still executes after continue")
+    print("end")
+
+def y_break_in_try_except():
+    for i in range(5):
+        try:
+            if i == 3:
+                break
+            print(f"Value: {i}")
+        except:
+            print("Exception occurred")
+
+def y1_break_in_try_except_nofallthru():
+    for i in range(5):
+        try:
+            if i == 3:
+                break
+            print(f"Value: {i}")
+        except:
+            print("Exception occurred")
+    print("end")
+
+def z_continue_in_try_except():
+    for i in range(5):
+        try:
+            if i == 2:
+                continue
+            print(f"Value: {i}")
+        except:
+            print("Exception occurred")
+
+def z1_continue_in_try_except_nofallthru():
+    for i in range(5):
+        try:
+            if i == 2:
+                continue
+            print(f"Value: {i}")
+        except:
+            print("Exception occurred")
+    print("end")
