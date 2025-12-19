@@ -75,7 +75,7 @@ class EditableBytecode:
         for inst in self.instructions:
             if inst.opname == "STORE_GLOBAL":
                 self.globals.add(inst.argval)
-            elif inst.opname == "STORE_DEREF":
+            elif inst.opname == "STORE_DEREF" and inst.argval != '__classdict__':
                 self.nonlocals.add(inst.argval)
 
         if self.version >= (3, 11):
